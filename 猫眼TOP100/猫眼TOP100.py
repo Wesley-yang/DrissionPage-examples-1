@@ -7,7 +7,7 @@ from DrissionPage import *
 import re
 
 
-def get_一页(url: str):
+def get_一页(url: str) -> list:
     page.get(url)
     数据列表 = []
     电影列表 = page.eles('tag:dd')
@@ -26,11 +26,11 @@ def get_一页(url: str):
     return 数据列表
 
 
-def 下载图片(src: str):
+def 下载图片(src: str) -> str:
     src = src.split('@')[0]
     下载路径 = r'result\imgs'
     Path(下载路径).mkdir(parents=True, exist_ok=True)
-    return page.download(src, r'result\imgs')
+    return page.download(src, r'result\imgs')[1]
 
 
 def get_上映时间(text: str) -> str:
