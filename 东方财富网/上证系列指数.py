@@ -36,7 +36,7 @@ def get_一页():
             '振幅': 列s[8].text,
             # 以下省略
         }
-        print(行数据['序号'])
+        print(行数据)
         页数据.append(行数据)
     return 页数据
 
