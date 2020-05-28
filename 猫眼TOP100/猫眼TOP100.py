@@ -10,13 +10,16 @@ import re
 def main() -> list:
     base_url = 'https://maoyan.com/board/4?offset='
     总列表 = []
-    for i in range(10):
+    for i in range(1):
         总列表.extend(get_一页(f'{base_url}{i * 10}'))
     return 总列表
 
 
 def get_一页(url: str) -> list:
+    print(url)
     page.get(url)
+    print(page.response.headers)
+    print(page.html)
     数据列表 = []
     电影列表 = page.eles('tag:dd')
     for 电影 in 电影列表:
@@ -53,14 +56,6 @@ def get_地区(text: str) -> Union[str, None]:
         return r.group(1)
     except AttributeError:
         return None
-
-
-def main() -> list:
-    base_url = 'https://maoyan.com/board/4?offset='
-    总列表 = []
-    for i in range(10):
-        总列表.extend(get_一页(f'{base_url}{i * 10}'))
-    return 总列表
 
 
 if __name__ == '__main__':
