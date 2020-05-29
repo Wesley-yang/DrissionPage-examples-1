@@ -13,8 +13,7 @@ def 爬一本书(url: str) -> None:
     page.get(url)
     书名 = page.ele('xpath://div[@class="sitepath"]/a[3]').text
     存放路径 = f'result\\{书名}'
-    url列表 = 读取列表(url)
-    for 章节url in url列表:
+    for 章节url in 读取列表(url):
         爬取一章(章节url, 存放路径)
 
 
