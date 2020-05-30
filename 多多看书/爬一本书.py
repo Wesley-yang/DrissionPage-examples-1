@@ -9,12 +9,12 @@ from pathlib import Path
 from DrissionPage import *
 
 
-def 爬一本书(url: str) -> None:
+def 爬一本书(url: str, 存放路径: str) -> None:
     page.get(url)
     书名 = page.ele('xpath://div[@class="sitepath"]/a[3]').text
-    存放路径 = f'result\\{书名}'
+    路径 = f'{存放路径}\\{书名}'
     for 章节url in 读取列表(url):
-        爬取一章(章节url, 存放路径)
+        爬取一章(章节url, 路径)
 
 
 def 读取列表(url: str) -> list:
@@ -37,4 +37,5 @@ if __name__ == '__main__':
     drission = Drission()
     page = MixPage(drission)
     书url = 'https://xs.sogou.com/list/5728502428'
-    爬一本书(书url)
+    保存路径 = 'result'
+    爬一本书(书url, 保存路径)
