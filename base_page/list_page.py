@@ -74,7 +74,7 @@ class ListPageBase(MixPage):
         for _ in range(num - 1):
             self.to_下一页()
 
-    def get_当前页(self, 待爬内容: list) -> list:
+    def get_当前页列表(self, 待爬内容: list) -> list:
         """
         待爬内容格式：[[xpath1,参数1,正则1],[xpath2,参数2,正则2]...]
         返回列表格式：[[参数1,参数2...],[参数1,参数2...]...]
@@ -99,10 +99,10 @@ class ListPageBase(MixPage):
             raise KeyError('须传入正整数')
         if self.总页数 and (not 爬页数 or 爬页数 > self.总页数 - 始页 + 1):
             爬页数 = self.总页数 - 始页 + 1
-        列表 = self.get_当前页(待爬内容)
+        列表 = self.get_当前页列表(待爬内容)
         for _ in range(爬页数 - 1):
             self.to_下一页(wait)
-            列表.extend(self.get_当前页(待爬内容))
+            列表.extend(self.get_当前页列表(待爬内容))
         return 列表
 
 
