@@ -8,7 +8,7 @@ import re
 
 class 书列表页(ListPageS):
     def __init__(self, drission: Drission, 首页url: str):
-        xpaths = {'行': '//div[contains(@class,"bookbox")]', }
+        xpaths = {'行': '//div[contains(@class,"bookbox")]'}
         super().__init__(drission, 首页url, **xpaths)
 
     def to_下一页(self, wait: float = None):

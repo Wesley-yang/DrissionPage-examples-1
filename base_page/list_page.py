@@ -31,41 +31,53 @@ from DrissionPage import MixPage, Drission
 
 
 class ListPageBase(MixPage):
+    """列表页基类"""
     def __init__(self, drission: Drission, 首页url: str = None, mode: str = 's', **xpaths):
+        """初始化函数
+        :param drission:
+        :param 首页url:
+        :param mode: 's'或'd'
+        :param xpaths:
+        """
         super().__init__(drission, mode)
         self.首页url = 首页url
         self.xpath_栏目名 = xpaths['栏目名'] if '栏目名' in xpaths else None
         self.xpath_下一页 = xpaths['下一页'] if '下一页' in xpaths else None
         self.xpath_行s = xpaths['行']
         self.xpath_页数 = xpaths['页数'] if '页数' in xpaths else None
-        self.总页数 = self.get_总页数() if '页数' in xpaths else None
         if 首页url:
-            self.get(首页url)
+            self.get(首页url, go_anyway=True)
+            if not self.url_available:
+                raise ConnectionError('连接出错')
+        self.总页数 = self.get_总页数() if '页数' in xpaths else None
 
     def get_栏目名称(self) -> Union[str, None]:
         if not self.xpath_栏目名:
             return None
         xpath = self.xpath_栏目名 if isinstance(self.xpath_栏目名, str) else self.xpath_栏目名[0]
-        值 = self.ele(f'xpath:{xpath}').text
         re_str = self.xpath_栏目名[1] if isinstance(self.xpath_栏目名, list) and len(self.xpath_栏目名) == 2 \
                                       and self.xpath_栏目名[1] else '(.*)'
-        r = re.search(re_str, 值)
+        r = re.search(re_str, self.ele(f'xpath:{xpath}').text)
         return r.group(1)
 
     def get_总页数(self) -> Union[int, None]:
         if not self.xpath_页数:
             return None
         xpath = self.xpath_页数 if isinstance(self.xpath_页数, str) else self.xpath_页数[0]
-        值 = self.ele(f'xpath:{xpath}').text
-        re_str = self.xpath_页数[1] if isinstance(self.xpath_页数, list) and len(self.xpath_页数) == 2 \
-                                     and self.xpath_页数[1] else '(.*)'
-        r = re.search(re_str, 值)
-        return int(r.group(1))
+        总页数_ele = self.ele(f'xpath:{xpath}', timeout=2)
+        if not 总页数_ele:
+            # 如果找不到总页数元素，表示只有一页
+            return 1
+        else:
+            re_str = self.xpath_页数[1] if isinstance(self.xpath_页数, list) and len(self.xpath_页数) == 2 \
+                                         and self.xpath_页数[1] else '(.*)'
+            r = re.search(re_str, 总页数_ele.text)
+            return int(r.group(1))
 
     def to_下一页(self, wait: float = None):
         pass
 
-    def to_第几页(self, num: int):
+    def to_第几页(self, num: int) -> None:
         if num < 1 or not isinstance(num, int):
             raise KeyError('请传入正整数')
         if self.总页数 and num > self.总页数:
@@ -96,7 +108,7 @@ class ListPageBase(MixPage):
         if not 爬页数 and not self.get_总页数():
             raise KeyError('须传入爬取页数')
         if 爬页数 and (not isinstance(爬页数, int) or 爬页数 < 1):
-            raise KeyError('须传入正整数')
+            raise TypeError('须传入正整数')
         if self.总页数 and (not 爬页数 or 爬页数 > self.总页数 - 始页 + 1):
             爬页数 = self.总页数 - 始页 + 1
         列表 = self.get_当前页列表(待爬内容)
