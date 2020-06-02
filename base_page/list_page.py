@@ -32,6 +32,7 @@ from DrissionPage import MixPage, Drission
 
 class ListPageBase(MixPage):
     """列表页基类"""
+
     def __init__(self, drission: Drission, 首页url: str = None, mode: str = 's', **xpaths):
         """初始化函数
         :param drission:
@@ -49,7 +50,7 @@ class ListPageBase(MixPage):
             self.get(首页url, go_anyway=True)
             if not self.url_available:
                 raise ConnectionError('连接出错')
-        self.总页数 = self.get_总页数() if '页数' in xpaths else None
+        self.总页数 = self._get_总页数() if '页数' in xpaths else None
 
     def get_栏目名称(self) -> Union[str, None]:
         if not self.xpath_栏目名:
@@ -60,7 +61,7 @@ class ListPageBase(MixPage):
         r = re.search(re_str, self.ele(f'xpath:{xpath}').text)
         return r.group(1)
 
-    def get_总页数(self) -> Union[int, None]:
+    def _get_总页数(self) -> Union[int, None]:
         if not self.xpath_页数:
             return None
         xpath = self.xpath_页数 if isinstance(self.xpath_页数, str) else self.xpath_页数[0]
@@ -105,7 +106,7 @@ class ListPageBase(MixPage):
 
     def get_列表(self, 待爬内容: list, 始页: int = 1, 爬页数: int = None, wait: float = None) -> list:
         self.to_第几页(始页)
-        if not 爬页数 and not self.get_总页数():
+        if not 爬页数 and not self.总页数:
             raise KeyError('须传入爬取页数')
         if 爬页数 and (not isinstance(爬页数, int) or 爬页数 < 1):
             raise TypeError('须传入正整数')
@@ -119,6 +120,7 @@ class ListPageBase(MixPage):
 
 
 class ListPageS(ListPageBase):
+    """使用requests的页面基类"""
     def __init__(self, drission: Drission, 首页url: str = None, **xpaths):
         super().__init__(drission, 首页url, 's', **xpaths)
 
@@ -128,6 +130,7 @@ class ListPageS(ListPageBase):
 
 
 class ListPageD(ListPageBase):
+    """使用selenium的页面基类"""
     def __init__(self, drission: Drission, 首页url: str = None, **xpaths):
         super().__init__(drission, 首页url, 'd', **xpaths)
 
