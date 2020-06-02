@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
+"""
+
+"""
 from pathlib import Path
 from typing import Union
 
@@ -8,18 +11,15 @@ import re
 
 
 def main() -> list:
-    base_url = 'https://maoyan.com/board/4?offset='
+    base_url = 'https://maoyan.com/board/4'
     总列表 = []
     for i in range(10):
-        总列表.extend(get_一页(f'{base_url}{i * 10}'))
+        总列表.extend(get_一页(f'{base_url}?offset={i * 10}'))
     return 总列表
 
 
 def get_一页(url: str) -> list:
-    print(url)
     page.get(url)
-    print(page.response.headers)
-    print(page.html)
     数据列表 = []
     电影列表 = page.eles('tag:dd')
     for 电影 in 电影列表:
@@ -42,7 +42,8 @@ def 下载图片(src: str) -> str:
     src = src.split('@')[0]
     下载路径 = r'result\imgs'
     Path(下载路径).mkdir(parents=True, exist_ok=True)
-    return page.download(src, r'result\imgs')[1]
+    文件名= page.download(src, r'result\imgs')[1]
+    return Path(f'{下载路径}\\{文件名}').absolute()
 
 
 def get_上映时间(text: str) -> str:
