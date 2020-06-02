@@ -48,7 +48,7 @@ class ListPageBase(MixPage):
         self.xpath_页数 = xpaths['页数'] if '页数' in xpaths else None
         if 首页url:
             self.get(首页url, go_anyway=True)
-            if not self.url_available:
+            if self.url_available is False:
                 raise ConnectionError('连接出错')
         self.总页数 = self._get_总页数() if '页数' in xpaths else None
 
