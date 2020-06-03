@@ -35,10 +35,10 @@ class ListPageBase(MixPage):
 
     def __init__(self, drission: Drission, 首页url: str = None, mode: str = 's', **xpaths):
         """初始化函数
-        :param drission:
-        :param 首页url:
+        :param drission: 驱动器对象
+        :param 首页url: 首页url
         :param mode: 's'或'd'
-        :param xpaths:
+        :param xpaths: 页面元素定位语句
         """
         super().__init__(drission, mode)
         self.首页url = 首页url
@@ -59,7 +59,10 @@ class ListPageBase(MixPage):
         re_str = self.xpath_栏目名[1] if isinstance(self.xpath_栏目名, list) and len(self.xpath_栏目名) == 2 \
                                       and self.xpath_栏目名[1] else '(.*)'
         r = re.search(re_str, self.ele(f'xpath:{xpath}').text)
-        return r.group(1)
+        try:
+            return r.group(1)
+        except AttributeError:
+            return None
 
     def _get_总页数(self) -> Union[int, None]:
         if not self.xpath_页数:
@@ -73,14 +76,17 @@ class ListPageBase(MixPage):
             re_str = self.xpath_页数[1] if isinstance(self.xpath_页数, list) and len(self.xpath_页数) == 2 \
                                          and self.xpath_页数[1] else '(.*)'
             r = re.search(re_str, 总页数_ele.text)
-            return int(r.group(1))
+            try:
+                return int(r.group(1))
+            except AttributeError:
+                return 1
 
     def to_下一页(self, wait: float = None):
         pass
 
     def to_第几页(self, num: int) -> None:
         if num < 1 or not isinstance(num, int):
-            raise KeyError('请传入正整数')
+            raise TypeError('请传入正整数')
         if self.总页数 and num > self.总页数:
             raise KeyError('始页不能大于总页数')
         self.get(self.首页url)
@@ -100,7 +106,10 @@ class ListPageBase(MixPage):
                 参数值 = 行.ele(f'xpath:{项[0]}').attr(项[1])
                 re_str = 项[2] if len(项) == 3 and 项[2] else '(.*)'
                 r = re.search(re_str, 参数值)
-                行结果.append(r.group(1))
+                try:
+                    行结果.append(r.group(1))
+                except AttributeError:
+                    行结果.append(None)
             结果列表.append(行结果)
         return 结果列表
 
@@ -121,6 +130,7 @@ class ListPageBase(MixPage):
 
 class ListPageS(ListPageBase):
     """使用requests的页面基类"""
+
     def __init__(self, drission: Drission, 首页url: str = None, **xpaths):
         super().__init__(drission, 首页url, 's', **xpaths)
 
@@ -131,11 +141,11 @@ class ListPageS(ListPageBase):
 
 class ListPageD(ListPageBase):
     """使用selenium的页面基类"""
+
     def __init__(self, drission: Drission, 首页url: str = None, **xpaths):
         super().__init__(drission, 首页url, 'd', **xpaths)
 
     def to_下一页(self, wait: float = None):
-        # TODO: 增加判断js是否加载完成功能
         self.ele(f'xpath:{self.xpath_下一页}').click()
         if wait:
             sleep(wait)
