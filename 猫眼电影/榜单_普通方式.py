@@ -20,6 +20,9 @@ def main() -> list:
 
 def get_一页(url: str) -> list:
     page.get(url)
+    if page.title.startswith(('验证中心', '页面不存在')):
+        print('被反爬了')  # TODO: 再研究
+        return [None]
     数据列表 = []
     电影列表 = page.eles('tag:dd')
     for 电影 in 电影列表:
@@ -30,20 +33,12 @@ def get_一页(url: str) -> list:
             '时间': get_上映时间(电影.ele('@class:releasetime').text),
             '地区': get_地区(电影.ele('@class:releasetime').text),
             '评分': 电影.ele('@class:score').text,
-            '封面': 下载图片(电影.ele('tag:img').next.attr('data-src')),
+            '封面': 电影.ele('@class:board-img').attr('src'),
             '链接': 电影.ele('tag:a').attr('href')
         }
         数据列表.append(数据)
         print(数据)
     return 数据列表
-
-
-def 下载图片(src: str) -> str:
-    src = src.split('@')[0]
-    下载路径 = r'result\imgs'
-    Path(下载路径).mkdir(parents=True, exist_ok=True)
-    文件名= page.download(src, r'result\imgs')[1]
-    return Path(f'{下载路径}\\{文件名}').absolute()
 
 
 def get_上映时间(text: str) -> str:
