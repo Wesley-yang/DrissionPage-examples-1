@@ -1,4 +1,12 @@
+# 迁移通知
+## 本库已迁移到gitee，github暂停维护。
+**项目地址：** [https://gitee.com/g1879/DrissionPage-demos](https://gitee.com/g1879/DrissionPage-demos)
+  
+# 简介
 使用DrissionPage爬取各网站的示例。
+DrissionPage项目地址：
+- [gitee](https://gitee.com/g1879/DrissionPage)
+- [github](https://github.com/g1879/DrissionPage)
 
 ## base_page
 
